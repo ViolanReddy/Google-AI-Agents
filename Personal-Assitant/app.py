@@ -59,23 +59,28 @@ with st.chat_message("assistant"):
         )
 
         #Execute the agent
-        events = st.session_state.runner.run_async(
-            user_id="streamlit_user",
-            session_id="streamlit_session",
-            new_message=content
-        )
+        async def call_agent():
+            response = ""
 
-        async for event in events:
-            if event.is_final_response():
-                if event.content and event.content.parts:
-                    response_text = "".join(
-                        part.text
-                        for part in event.content.parts
-                        if part.text
-                    )
+            events = st.session_state.runner.run_async(
+                user_id="streamlit_user",
+                session_id="streamlit_session",
+                new_message=content
+            )
 
-        #Display reponse
-        st.markdown(response_text)
+            async for event in events:
+                if event.is_final_response():
+                    if event.content and event.content.parts:
+                        response_text = "".join(
+                            part.text
+                            for part in event.content.parts
+                            if part.text
+                        )
+
+            #Display reponse
+            return response
+
+        response_text = asyncio.run(call_agent())
 
 #Save assistant response
 st.session_state.messages.append(
