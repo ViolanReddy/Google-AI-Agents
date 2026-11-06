@@ -30,6 +30,18 @@ if "runner" not in st.session_state:
         session_service=st.session_state.session_service
     )
 
+# Create a user session
+if "session_id" not in st.session_state:
+
+    async def create_session():
+        session = await st.session_state.session_service.create_session(
+            app_name="personal_assistant",
+            user_id="streamlit_user"
+        )
+        return session.id
+
+    st.session_state.session_id = asyncio.run(create_session())
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
